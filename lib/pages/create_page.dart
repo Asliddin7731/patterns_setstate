@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:patterns_setstate/pages/home_page.dart';
 import 'package:patterns_setstate/service/log_service.dart';
 
 import '../model/post_model.dart';
@@ -150,7 +149,7 @@ class _CreatePageState extends State<CreatePage> {
     );
   }
 
-  void _doPostCreate() {
+  Future _doPostCreate() async {
     String title = titleController.text.toString().trim();
     String body = bodyController.text.toString().trim();
 
@@ -162,12 +161,12 @@ class _CreatePageState extends State<CreatePage> {
     var post = Post(userId: 1, title: title, body: body);
     var post2 = Post(userId: 1, title: title, body: body, id: widget.postId);
 
-    widget.isUpdate ? apiPostUpdate(post2) : apiPostCreate(post);
+    widget.isUpdate ? await apiPostUpdate(post2) : await apiPostCreate(post);
     Navigator.pop(context, true);
   }
 
-  void apiPostCreate(Post post) {
-    Network.POST(Network.apiCreate, Network.paramsCreate(post))
+  Future<void> apiPostCreate(Post post) async {
+    await Network.POST(Network.apiCreate, Network.paramsCreate(post))
         .then((response) => {
               setState(() {
                 isLoading = false;
@@ -175,8 +174,8 @@ class _CreatePageState extends State<CreatePage> {
             });
   }
 
-  void apiPostUpdate(Post post) {
-    Network.PUT(
+  Future<void> apiPostUpdate(Post post) async {
+    await Network.PUT(
             Network.apiUpdate + post.id.toString(), Network.paramsUpdate(post))
         .then((response) => {
               LogService.e('update : $response'),
